@@ -1,70 +1,51 @@
 const expressMonocle = require('./');
+// const cookieParser = require('cookie-parser');
 
 const app = expressMonocle();
 
+app.use(cookieParser());
+
 app.get('/',
   function firstFunc(req, res, next) {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
+    console.log(`This is the base route`);
+    // res.cookie(`secret`, (Math.floor(Math.random() * 99)));
+    // console.log(req.cookies);
     req.id = `cheng`;
-    // console.log('first middleware');
     next();
   },
   (req, res, next) => {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
     req.id = `travis`;
-    // console.log('second middleware');
     next();
   },
   (req, res, next) => {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
     req.id = `pat`;
     req.testing = 'testing object';
-    // console.log('third middleware');
     next();
   },
   (req, res, next) => {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
+    res.cookie('secret', (Math.floor(Math.random() * 99)));
     req.id = `sahil`;
-    // console.log('fourth middleware');
     next();
   },
   (req, res, next) => {
-    // console.log('Cookies: ', req.cookies);
-    // console.log(req.id);
-    req.id = `travis`;
-    // console.log('final middleware');
-    // console.log(req.id);
+    req.name = `travis`;
     res.end();
   }
 );
 
 app.get('/login',
   function firstFunc(req, res, next) {
+    console.log(`This is the login route`);
     req.id = `cheng`;
-    // console.log('first middleware');
-    next();
-  },
-  (req, res, next) => {
-    req.id = `travis`;
-    // console.log('second middleware');
     next();
   },
   (req, res, next) => {
     req.id = `pat`;
     req.testing = 'testing object';
-    // console.log('third middleware');
     next();
   },
   (req, res, next) => {
-    req.id = `sahil`;
-    // console.log('fourth middleware');
-    next();
-  },
-  (req, res, next) => {
-    // console.log(req.id);
     req.id = `travis`;
-    // console.log('final middleware');
-    // console.log(req.id);
     res.end();
   }
 );
