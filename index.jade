@@ -11,37 +11,72 @@ html
 
       .card {
         display: inline-block;
+        width: 98%;
       }
 
-      #middlewares {
-        display: flex;
-        flex-flow: row wrap;
+      .tag {
+        text-align: right;
       }
 
-      .hortizonal {
-        list-style-type: none;
+      #routes-container {
+        box-shadow: 10px 10px 5px #f2f2f2;
+      }
+
+      #routes {
+        margin: 10px;
+      }
+
+      .pill-ctx {
         margin: 0;
         padding: 0;
       }
 
-      .hortizonal li {
-        margin-right: 10px;
+      #middlewares, #middlewares-header {
+        display: flex;
+        flex-flow: row wrap;
+        list-style-type: none;
+      }
+
+      #middlewares li, #middlewares-header li {
+        text-align: center;
+        width: 50%;
+      }
+
+      #middlewares-header li {
+        font-size: 2em;
+        font-weight: bolder;
       }
   body
     .container-fluid
-      //- Add onclick handliers to each item during dynamic creation
-      .col-xs-2
-        ul#routes.list-group
-      .col-xs-10
-        ul#middlewares.hortizonal 
-
+      .col-xs-3
+        img.img-fluid(src="http://res.cloudinary.com/lc8bqflyz/image/upload/v1478126894/Screen_Shot_2016-11-02_at_2.43.29_PM_nmvgoc.png")
+        #routes-container
+          ul#routes.list-group
+      .col-xs-9
+        ul#middlewares-header
+          li request
+          li response
+        ul#middlewares
 
   script.
+    // Set up references to DOM nodes
+    const routesContainerEl = document.getElementById('routes-container')
+    const routesListEl = document.getElementById('routes')
+    const middlewaresHeaderEl = document.getElementById('middlewares-header')
+    const middlewaresListEl = document.getElementById('middlewares')
+
+    const init = () => {
+      //- Dynamically sets the positioning of our elements
+      routesContainerEl.style.height = `${window.innerHeight - 200}px`
+      middlewaresHeaderEl.style['margin-top'] = `${routesContainerEl.offsetTop - 50}px`
+
+      for (let i = data.length - 1; i >= 0; i--) {
+        routesListEl.appendChild(createRouteEl(data[i], i))
+      }
+    }
+
     const data = !{JSON.stringify(globalMonoStore)}
 
-    // Set up references to DOM nodes
-    const routesListEl = document.getElementById('routes');
-    const middlewaresListEl = document.getElementById('middlewares')
 
     routesListEl.addEventListener('click', e => {
       if (e.target.localName === 'li') {
@@ -52,10 +87,11 @@ html
 
         resetMiddlewares()
 
-        for (const middleware in changes) {
+        for (const middleware in changes.req) {
           if (middleware == 0) continue
-          const fnName = changes[0].route.stack[position++].name
-          middlewaresListEl.appendChild(createMiddlewareEl(changes[middleware], fnName, position))
+          const fnName = changes.req[0].route.stack[position++].name
+          middlewaresListEl.appendChild(createMiddlewareEl(changes.req[middleware], fnName, position))
+          middlewaresListEl.appendChild(createMiddlewareEl(changes.res[middleware], fnName, position))
         }
       } 
     })
@@ -71,9 +107,20 @@ html
       routeEl.className = 'list-group-item'
 
       const counterEl = document.createElement('span')
-      const counterContent = document.createTextNode(Object.keys(changes).length - 1)
-      counterEl.className = 'tag tag-default tag-pill float-xs-right'
-      counterEl.appendChild(counterContent)
+
+      const counterReqEl = document.createElement('p')
+      const counterReqContent = document.createTextNode(`req: ${Object.keys(changes.req).length - 1}`)
+      counterReqEl.className = 'pill-ctx'
+      counterReqEl.appendChild(counterReqContent)
+
+      const counterResEl = document.createElement('p')
+      const counterResContent = document.createTextNode(`res: ${Object.keys(changes.res).length - 1}`)
+      counterResEl.className = 'pill-ctx'
+      counterResEl.appendChild(counterResContent)
+
+      counterEl.className = 'tag bg-primary label-pill float-xs-right'
+      counterEl.appendChild(counterReqEl)
+      counterEl.appendChild(counterResEl)
 
       routeEl.appendChild(counterEl)
       routeEl.appendChild(routeContent)
@@ -90,6 +137,7 @@ html
       const cardBlock = document.createElement('div')
       cardBlock.className = 'card-block'
 
+      //- Create req objects
       const middlewareNameEl = document.createElement('h4')
       const middlewareNameContent = document.createTextNode(`${path} [${position}]`)
       middlewareNameEl.className = 'card-title'
@@ -114,6 +162,4 @@ html
       return middlewareEl
     }
 
-    for (let i = data.length - 1; i >= 0; i--) {
-      routesListEl.appendChild(createRouteEl(data[i], i))
-    }
+    init()
