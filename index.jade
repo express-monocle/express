@@ -13,6 +13,11 @@ html
         display: inline-block;
       }
 
+      #middlewares {
+        display: flex;
+        flex-flow: row wrap;
+      }
+
       .hortizonal {
         list-style-type: none;
         margin: 0;
@@ -20,7 +25,6 @@ html
       }
 
       .hortizonal li {
-        display: inline;
         margin-right: 10px;
       }
   body
@@ -44,14 +48,14 @@ html
         const idx = e.target.id.replace(/.+-/, '')
         const { changes, path } = data[idx]
         
-        let counter = 0
+        let position = 0
 
         resetMiddlewares()
 
-        for (const key in changes) {
-          if (key == 0) continue
-          const fnName = changes[0].route.stack[counter++].name
-          middlewaresListEl.appendChild(createMiddlewareEl(changes[key], fnName))
+        for (const middleware in changes) {
+          if (middleware == 0) continue
+          const fnName = changes[0].route.stack[position++].name
+          middlewaresListEl.appendChild(createMiddlewareEl(changes[middleware], fnName, position))
         }
       } 
     })
@@ -77,7 +81,7 @@ html
       return routeEl
     }
 
-    const createMiddlewareEl = (changes, path) => {
+    const createMiddlewareEl = (changes, path, position) => {
       const middlewareEl = document.createElement('li')
 
       const card = document.createElement('div')
@@ -87,14 +91,18 @@ html
       cardBlock.className = 'card-block'
 
       const middlewareNameEl = document.createElement('h4')
-      const middlewareNameContent = document.createTextNode(path)
+      const middlewareNameContent = document.createTextNode(`${path} [${position}]`)
       middlewareNameEl.className = 'card-title'
       middlewareNameEl.appendChild(middlewareNameContent)
       cardBlock.appendChild(middlewareNameEl)
 
       for (const prop in changes) {
+        //- Shows objects
+        let value = changes[prop]
+        if (typeof value === 'object') value = JSON.stringify(value)
+
         const changedItemEl = document.createElement('p')
-        const changedItemContent = document.createTextNode(`${prop}: ${changes[prop]}`)
+        const changedItemContent = document.createTextNode(`${prop}: ${value}`)
         changedItemEl.className = 'card-text'
         changedItemEl.appendChild(changedItemContent)
         cardBlock.appendChild(changedItemEl)
@@ -105,7 +113,7 @@ html
 
       return middlewareEl
     }
-    
+
     for (let i = data.length - 1; i >= 0; i--) {
       routesListEl.appendChild(createRouteEl(data[i], i))
     }
