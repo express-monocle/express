@@ -2,7 +2,9 @@ module.exports = {
   globalMonoStore: [],
   _temp: {
     changes: {
-      req: {}
+      req: {},
+      res: {}
     }
-  }
+  },
+  _counter: 0
 }
