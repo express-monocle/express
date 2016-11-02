@@ -52,10 +52,10 @@ html
 
         resetMiddlewares()
 
-        for (const middleware in changes) {
+        for (const middleware in changes.req) {
           if (middleware == 0) continue
-          const fnName = changes[0].route.stack[position++].name
-          middlewaresListEl.appendChild(createMiddlewareEl(changes[middleware], fnName, position))
+          const fnName = changes.req[0].route.stack[position++].name
+          middlewaresListEl.appendChild(createMiddlewareEl(changes.req[middleware], fnName, position))
         }
       } 
     })
