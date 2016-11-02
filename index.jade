@@ -1,0 +1,111 @@
+doctype html
+html
+  head
+    title express-monoicle
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css', integrity='sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi', crossorigin='anonymous')
+    
+    style.
+      .container-fluid {
+        margin-top: 25px;
+      }
+
+      .card {
+        display: inline-block;
+      }
+
+      .hortizonal {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .hortizonal li {
+        display: inline;
+        margin-right: 10px;
+      }
+  body
+    .container-fluid
+      //- Add onclick handliers to each item during dynamic creation
+      .col-xs-2
+        ul#routes.list-group
+      .col-xs-10
+        ul#middlewares.hortizonal 
+
+
+  script.
+    const data = !{JSON.stringify(globalMonoStore)}
+
+    // Set up references to DOM nodes
+    const routesListEl = document.getElementById('routes');
+    const middlewaresListEl = document.getElementById('middlewares')
+
+    routesListEl.addEventListener('click', e => {
+      if (e.target.localName === 'li') {
+        const idx = e.target.id.replace(/.+-/, '')
+        const { changes, path } = data[idx]
+        
+        let counter = 0
+
+        resetMiddlewares()
+
+        for (const key in changes) {
+          if (key == 0) continue
+          const fnName = changes[0].route.stack[counter++].name
+          middlewaresListEl.appendChild(createMiddlewareEl(changes[key], fnName))
+        }
+      } 
+    })
+
+    // DOM Helpers
+    const resetMiddlewares = () => middlewaresListEl.innerHTML = ''
+
+    // DOM Creators
+    const createRouteEl = ({ changes, path }, idx) => {
+      const routeEl = document.createElement('li')
+      const routeContent = document.createTextNode(path)
+      routeEl.id = `route-${idx}`
+      routeEl.className = 'list-group-item'
+
+      const counterEl = document.createElement('span')
+      const counterContent = document.createTextNode(Object.keys(changes).length - 1)
+      counterEl.className = 'tag tag-default tag-pill float-xs-right'
+      counterEl.appendChild(counterContent)
+
+      routeEl.appendChild(counterEl)
+      routeEl.appendChild(routeContent)
+
+      return routeEl
+    }
+
+    const createMiddlewareEl = (changes, path) => {
+      const middlewareEl = document.createElement('li')
+
+      const card = document.createElement('div')
+      card.className = 'card'
+
+      const cardBlock = document.createElement('div')
+      cardBlock.className = 'card-block'
+
+      const middlewareNameEl = document.createElement('h4')
+      const middlewareNameContent = document.createTextNode(path)
+      middlewareNameEl.className = 'card-title'
+      middlewareNameEl.appendChild(middlewareNameContent)
+      cardBlock.appendChild(middlewareNameEl)
+
+      for (const prop in changes) {
+        const changedItemEl = document.createElement('p')
+        const changedItemContent = document.createTextNode(`${prop}: ${changes[prop]}`)
+        changedItemEl.className = 'card-text'
+        changedItemEl.appendChild(changedItemContent)
+        cardBlock.appendChild(changedItemEl)
+      }
+
+      card.appendChild(cardBlock)
+      middlewareEl.appendChild(card)
+
+      return middlewareEl
+    }
+    
+    for (let i = data.length - 1; i >= 0; i--) {
+      routesListEl.appendChild(createRouteEl(data[i], i))
+    }
