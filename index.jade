@@ -1,24 +1,111 @@
 doctype html
 html
   head
-    title Page Title
-    // Load c3.css
-    link(href='https://rawgit.com/masayuki0812/c3/master/c3.css', rel='stylesheet', type='text/css')
-    // Load d3.js and c3.js
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.1/d3.min.js')
-    script(src='https://rawgit.com/masayuki0812/c3/master/c3.js')
+    title express-monoicle
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css', integrity='sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi', crossorigin='anonymous')
+    
+    style.
+      .container-fluid {
+        margin-top: 25px;
+      }
+
+      .card {
+        display: inline-block;
+      }
+
+      .hortizonal {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .hortizonal li {
+        display: inline;
+        margin-right: 10px;
+      }
   body
-    h1 My First Heading
-    p My first paragraph.
-    #chart
+    .container-fluid
+      //- Add onclick handliers to each item during dynamic creation
+      .col-xs-2
+        ul#routes.list-group
+      .col-xs-10
+        ul#middlewares.hortizonal 
+
+
   script.
-    console.log(!{JSON.stringify(globalMonoStore)});
-    var chart = c3.generate({
-    bindto: '#chart',
-    data: {
-    columns: [
-    ['data1', 30, 200, 100, 400, 150, 250],
-    ['data2', 50, 20, 10, 40, 15, 25]
-    ]
+    const data = !{JSON.stringify(globalMonoStore)}
+
+    // Set up references to DOM nodes
+    const routesListEl = document.getElementById('routes');
+    const middlewaresListEl = document.getElementById('middlewares')
+
+    routesListEl.addEventListener('click', e => {
+      if (e.target.localName === 'li') {
+        const idx = e.target.id.replace(/.+-/, '')
+        const { changes, path } = data[idx]
+        
+        let counter = 0
+
+        resetMiddlewares()
+
+        for (const key in changes) {
+          if (key == 0) continue
+          const fnName = changes[0].route.stack[counter++].name
+          middlewaresListEl.appendChild(createMiddlewareEl(changes[key], fnName))
+        }
+      } 
+    })
+
+    // DOM Helpers
+    const resetMiddlewares = () => middlewaresListEl.innerHTML = ''
+
+    // DOM Creators
+    const createRouteEl = ({ changes, path }, idx) => {
+      const routeEl = document.createElement('li')
+      const routeContent = document.createTextNode(path)
+      routeEl.id = `route-${idx}`
+      routeEl.className = 'list-group-item'
+
+      const counterEl = document.createElement('span')
+      const counterContent = document.createTextNode(Object.keys(changes).length - 1)
+      counterEl.className = 'tag tag-default tag-pill float-xs-right'
+      counterEl.appendChild(counterContent)
+
+      routeEl.appendChild(counterEl)
+      routeEl.appendChild(routeContent)
+
+      return routeEl
     }
-    });
+
+    const createMiddlewareEl = (changes, path) => {
+      const middlewareEl = document.createElement('li')
+
+      const card = document.createElement('div')
+      card.className = 'card'
+
+      const cardBlock = document.createElement('div')
+      cardBlock.className = 'card-block'
+
+      const middlewareNameEl = document.createElement('h4')
+      const middlewareNameContent = document.createTextNode(path)
+      middlewareNameEl.className = 'card-title'
+      middlewareNameEl.appendChild(middlewareNameContent)
+      cardBlock.appendChild(middlewareNameEl)
+
+      for (const prop in changes) {
+        const changedItemEl = document.createElement('p')
+        const changedItemContent = document.createTextNode(`${prop}: ${changes[prop]}`)
+        changedItemEl.className = 'card-text'
+        changedItemEl.appendChild(changedItemContent)
+        cardBlock.appendChild(changedItemEl)
+      }
+
+      card.appendChild(cardBlock)
+      middlewareEl.appendChild(card)
+
+      return middlewareEl
+    }
+    
+    for (let i = data.length - 1; i >= 0; i--) {
+      routesListEl.appendChild(createRouteEl(data[i], i))
+    }
