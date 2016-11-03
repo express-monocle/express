@@ -18,12 +18,20 @@ html
         text-align: right;
       }
 
+      .tag-method {
+        margin-right: 5px;
+      }
+
       #routes-container {
         box-shadow: 10px 10px 5px #f2f2f2;
       }
 
       #routes {
         margin: 10px;
+      }
+
+      #routes li:hover {
+        cursor: pointer;
       }
 
       .pill-ctx {
@@ -48,17 +56,20 @@ html
       }
   body
     .container-fluid
-      .col-xs-3
+      .col-xs-4
         img.img-fluid(src="http://res.cloudinary.com/lc8bqflyz/image/upload/v1478126894/Screen_Shot_2016-11-02_at_2.43.29_PM_nmvgoc.png")
         #routes-container
           ul#routes.list-group
-      .col-xs-9
+      .col-xs-8
         ul#middlewares-header
           li request
           li response
         ul#middlewares
 
   script.
+    //- Data from server
+    const data = !{JSON.stringify(globalMonoStore)}
+    
     // Set up references to DOM nodes
     const routesContainerEl = document.getElementById('routes-container')
     const routesListEl = document.getElementById('routes')
@@ -68,15 +79,12 @@ html
     const init = () => {
       //- Dynamically sets the positioning of our elements
       routesContainerEl.style.height = `${window.innerHeight - 200}px`
-      middlewaresHeaderEl.style['margin-top'] = `${routesContainerEl.offsetTop - 50}px`
+      middlewaresHeaderEl.style['margin-top'] = `${routesContainerEl.offsetTop - 65}px`
 
       for (let i = data.length - 1; i >= 0; i--) {
         routesListEl.appendChild(createRouteEl(data[i], i))
       }
     }
-
-    const data = !{JSON.stringify(globalMonoStore)}
-
 
     routesListEl.addEventListener('click', e => {
       if (e.target.localName === 'li') {
@@ -87,7 +95,12 @@ html
 
         resetMiddlewares()
 
-        for (const middleware in changes.req) {
+        let mostProps = 'req'
+        if (Object.keys(changes.req).length < Object.keys(changes.res).length) {
+          mostProps = 'res'
+        }
+
+        for (const middleware in changes[mostProps]) {
           if (middleware == 0) continue
           const fnName = changes.req[0].route.stack[position++].name
           middlewaresListEl.appendChild(createMiddlewareEl(changes.req[middleware], fnName, position))
@@ -100,12 +113,36 @@ html
     const resetMiddlewares = () => middlewaresListEl.innerHTML = ''
 
     // DOM Creators
-    const createRouteEl = ({ changes, path }, idx) => {
+    const createRouteEl = ({ changes, method, path }, idx) => {
       const routeEl = document.createElement('li')
       const routeContent = document.createTextNode(path)
       routeEl.id = `route-${idx}`
       routeEl.className = 'list-group-item'
 
+      //- Left pills
+      const methodEl = document.createElement('span')
+      const methodContent = document.createTextNode(method)
+
+      switch (method) {
+        case 'GET':
+          methodEl.className = 'tag tag-success tag-method label-pill float-xs-left'
+          break
+        case 'POST':
+          methodEl.className = 'tag tag-warning tag-method label-pill float-xs-left'
+          break
+        case 'PUT':
+          methodEl.className = 'tag tag-info tag-method label-pill float-xs-left'
+          break
+        case 'DELETE':
+          methodEl.className = 'tag tag-primary tag-method label-pill float-xs-left'
+          break
+        default:
+          methodEl.className = 'tag tag-default tag-method label-pill float-xs-left'
+      }
+
+      methodEl.appendChild(methodContent)
+
+      //- Right pills
       const counterEl = document.createElement('span')
 
       const counterReqEl = document.createElement('p')
@@ -122,6 +159,7 @@ html
       counterEl.appendChild(counterReqEl)
       counterEl.appendChild(counterResEl)
 
+      routeEl.appendChild(methodEl)
       routeEl.appendChild(counterEl)
       routeEl.appendChild(routeContent)
 
