@@ -1,8 +1,9 @@
-const em = require('..');
+// const express = require('express');
+const monocle = require('express-monocle');
 const path = require('path');
 const bodyParser = require('body-parser');
 
-const app = em();
+const app = monocle();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
