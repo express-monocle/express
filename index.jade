@@ -151,8 +151,21 @@ html
       counterReqEl.className = 'pill-ctx'
       counterReqEl.appendChild(counterReqContent)
 
+      //- Fix bug with including empty res object
+      let lastKey
+      let keyCount = 0
+      for (const key in changes.res) {
+        lastKey = key
+        keyCount++
+      } 
+      
       const counterResEl = document.createElement('p')
-      const counterResContent = document.createTextNode(`res: ${Object.keys(changes.res).length - 1}`)
+      let counterResContent;
+      if (Object.keys(changes.res[lastKey]).length < 1) {
+        counterResContent = document.createTextNode(`res: ${keyCount - 2}`)
+      } else {
+        counterResContent = document.createTextNode(`res: ${keyCount - 1}`)
+      }
       counterResEl.className = 'pill-ctx'
       counterResEl.appendChild(counterResContent)
 
