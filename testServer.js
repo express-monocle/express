@@ -1,73 +1,55 @@
 const expressMonocle = require('./');
+const cookieParser = require('cookie-parser');
 
 const app = expressMonocle();
 
+app.use(cookieParser());
+
 app.get('/',
-  function firstFunc(req, res, next) {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
+  function (req, res, next) {
     req.id = `cheng`;
-    // console.log('first middleware');
+    res.cookie = { foo: 'bar' };
     next();
   },
-  (req, res, next) => {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
+  function secondFunc(req, res, next) {
     req.id = `travis`;
-    // console.log('second middleware');
     next();
   },
   (req, res, next) => {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
+    res.foo = 'bar';
     req.id = `pat`;
-    req.testing = 'testing object';
-    // console.log('third middleware');
+    req.testing = { foo: 'bar' };
     next();
   },
   (req, res, next) => {
-    // res.cookie('secret', (Math.floor(Math.random() * 99)));
     req.id = `sahil`;
-    // console.log('fourth middleware');
     next();
   },
   (req, res, next) => {
-    // console.log('Cookies: ', req.cookies);
-    // console.log(req.id);
     req.id = `travis`;
-    // console.log('final middleware');
-    // console.log(req.id);
     res.end();
   }
 );
 
 app.get('/login',
-  function firstFunc(req, res, next) {
-    req.id = `cheng`;
-    // console.log('first middleware');
-    next();
-  },
+  // function secondFunc(req, res, next) {
+  //   req.id = `cheng`;
+  //   next();
+  // },
+  // (req, res, next) => {
+  //   req.id = `travis`;
+  //   next();
+  // },
   (req, res, next) => {
-    req.id = `travis`;
-    // console.log('second middleware');
-    next();
-  },
-  (req, res, next) => {
-    req.id = `pat`;
-    req.testing = 'testing object';
-    // console.log('third middleware');
-    next();
-  },
-  (req, res, next) => {
-    req.id = `sahil`;
-    // console.log('fourth middleware');
-    next();
-  },
-  (req, res, next) => {
-    // console.log(req.id);
-    req.id = `travis`;
-    // console.log('final middleware');
-    // console.log(req.id);
+    // req.id = `travis`;
     res.end();
   }
 );
+
+app.post('/login', (req, res, next) => {
+  req.id = 'post';
+  res.json({ foo: 'bar' });
+});
 
 
 app.listen(3000, () => {
