@@ -90,23 +90,24 @@ html
       if (e.target.localName === 'li') {
         const idx = e.target.id.replace(/.+-/, '')
         const { changes, path } = data[idx]
-        
-        let position = 0
 
         resetMiddlewares()
 
-        let mostProps = 'req'
-        if (Object.keys(changes.req).length < Object.keys(changes.res).length) {
-          mostProps = 'res'
+        let count = 0
+        for (const key in changes.req) {
+          if (+key > count) count = +key
         }
 
-        for (const middleware in changes[mostProps]) {
-          if (middleware == 0) continue
-          const fnName = changes.req[0].route.stack[position++].name
-          middlewaresListEl.appendChild(createMiddlewareEl(changes.req[middleware], fnName, position))
-          middlewaresListEl.appendChild(createMiddlewareEl(changes.res[middleware], fnName, position))
+        for (const key in changes.res) {
+          if (+key > count) count = +key
         }
-      } 
+
+        for (let position = 1; position <= count; position++) {
+          const fnName = changes.req[0].route.stack[position - 1].name
+          middlewaresListEl.appendChild(createMiddlewareEl(changes.req[position], fnName, position))
+          middlewaresListEl.appendChild(createMiddlewareEl(changes.res[position], fnName, position))
+        }
+      }
     })
 
     // DOM Helpers
