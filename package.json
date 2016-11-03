@@ -1,5 +1,5 @@
 {
-  "name": "express",
+  "name": "express-monocle",
   "description": "Fast, unopinionated, minimalist web framework",
   "version": "4.14.0",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
