@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>express-monocle</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi"
+    crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <style>
+    .container-fluid {
+      margin-top: 25px;
+    }
+    
+    .card {
+      display: inline-block;
+    }
+    
+    #middlewares {
+      display: flex;
+      flex-flow: row wrap;
+    }
+    
+    .hortizonal {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .hortizonal li {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  Express monocle
+  <div class="container-fluid">
+    <div class="col-xs-2">
+      <ul id="routes" class="list-group"></ul>
+    </div>
+    <div class="col-xs-10">
+      <ul id="middlewares" class="hortizonal"> </ul>
+    </div>
+  </div>
+</body>
+<script>
+    const data = [
+      {
+        "changes": {
+          "0": {
+            "route": {
+              "path": "/",
+              "stack": [
+                {
+                  "name": "firstFunc",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                },
+                {
+                  "name": "<anonymous>",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                },
+                {
+                  "name": "<anonymous>",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                },
+                {
+                  "name": "<anonymous>",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                },
+                {
+                  "name": "<anonymous>",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                }
+              ],
+              "methods": {
+                "get": true
+              }
+            }
+          },
+          "1": {
+            "id": "cheng"
+          },
+          "2": {
+            "id": "travis"
+          },
+          "3": {
+            "id": "pat",
+            "testing": {
+              "test_obj": "test"
+            }
+          },
+          "4": {
+            "id": "sahil"
+          },
+          "5": {
+            "name": "travis"
+          }
+        },
+        "path": "/"
+      },
+      {
+        "changes": {
+          "0": {
+            "route": {
+              "path": "/login",
+              "stack": [
+                {
+                  "name": "firstFunc",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                },
+                {
+                  "name": "<anonymous>",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                },
+                {
+                  "name": "<anonymous>",
+                  "keys": [],
+                  "regexp": {},
+                  "method": "get"
+                }
+              ],
+              "methods": {
+                "get": true
+              }
+            }
+          },
+          "1": {
+            "id": "foo"
+          },
+          "2": {
+            "id": "bar",
+            "testing": {
+              "foo": "bar"
+            }
+          },
+          "3": {
+            "id": "baz"
+          }
+        },
+        "path": "/login"
+      }
+    ];
+    console.log(data)
+
+    // Set up references to DOM nodes
+    const routesListEl = $('#routes');
+    const middlewaresListEl = $('#middlewares');
+
+    // Adding top-level event listener then finding target of click event
+    $('#routes').on('click', e => {
+      if (e.target.localName === 'li') {
+        const idx = e.target.id.replace(/[^0-9]/g, '');
+        const changes = data[idx].changes;
+        const path = data[idx].path;
+        let position = 0;
+
+        $('#middlewares').html() = '';
+
+        for (const middleware in changes) {
+          if (middleware === 0) continue;
+          const fnName = changes[0].route.stack[position++].name;
+          $('#middlewares').append(createMiddlewareEl(changes[middleware], fnName, position));
+        }
+      }
+    }),
+
+    function createRouteEl (changes, path, idx) {
+      const counterEl = $('<span></span>').addClass('tag tag-default tag-pill float-xs-right').text(Object.keys(changes).length - 1);
+      const routeEl = $('<li></li>').addClass('list-group-item').attr('id', `route-${idx}`).text(path).append(counterEl);
+      return routeEl;
+    }
+
+    for (let i = data.length - 1; i >= 0; i--) {
+      routesListEl.append(createRouteEl(data[i], i));
+    }
+
+    const createMiddlewareEl = (changes, path, position) => {
+      const middlewareEl = $('<li></li>');
+      const middlewareNameEl = $('<h4></h4>').addClass('card-title').text(`${path} [${position}]`);
+      const cardBlock = $('<div></div>').addClass('card-block').append(middlewareNameEl);
+
+      for (const prop in changes) {
+        let value = changes[prop]
+        if (typeof value === 'object') value = JSON.stringify(value)
+        const changedItemEl = $('<p></p>').addClass('card-text').text(`${prop}: ${value}`);
+        cardBlock.append(changedItemEl);
+      }
+
+      const card = $('<div></div>').addClass('card').append(cardBlock);
+      middlewareEl.append(card);
+      return middlewareEl;
+    };
+
+  </script>
+
+</html>

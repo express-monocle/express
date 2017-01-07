@@ -1,3 +1,28 @@
+#Express Monocle
+###*A developer tool for debugging your server-side routes*
+
+##Description 
+Express Monocle forks the popular Node server library, express, and adds easy-to-use degugging functionality for developers.  You can track the changes to the request and response objects as they make their way through server routes in order to easily find out how and when the objects change.
+
+We inject ES6 proxies into the request and response object constructors to easily track changes.
+
+We also implemented an automatic debugging route to visualize those changes called '/debug' to see exactly what's going on.
+
+**Screenshot of debugging route:**
+![Express-Monocle](demo/readme-assets/Express-Monocle-screenshot.png)  
+
+**Debug route like so:**
+![Debug-route-code](demo/readme-assets/EM-debug-route.png)
+
+**ES6 proxies added to the request and response object constructors like so:**
+![Proxy-code](demo/readme-assets/EM-code-proxy.png)
+
+##<a name="authors"></a>Authors  
+[Cheng Ly](https://github.com/chengsieuly)  
+[Travis Huff](https://github.com/travishuff)  
+[Patrick Divine](https://github.com/pddivine)
+
+#--Express--
 [![Express Logo](https://i.cloudup.com/zfY6lL7eFa-3000x3000.png)](http://expressjs.com/)
 
   Fast, unopinionated, minimalist web framework for [node](http://nodejs.org).
