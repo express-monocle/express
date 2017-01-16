@@ -12,7 +12,7 @@ We also implemented an automatic debugging route to visualize those changes call
 ![Express-Monocle](demo/readme-assets/Express-Monocle-screenshot.png)  
 
 **Debug route like so:**
-![Debug-route-code](demo/readme-assets/EM-debug-route.png)
+![Debug-route-code](demo/readme-assets/EM-debug-route.png) 
 
 **ES6 proxies added to the request and response object constructors like so:**
 ![Proxy-code](demo/readme-assets/EM-code-proxy.png)
@@ -20,7 +20,8 @@ We also implemented an automatic debugging route to visualize those changes call
 ##<a name="authors"></a>Authors  
 [Cheng Ly](https://github.com/chengsieuly)  
 [Travis Huff](https://github.com/travishuff)  
-[Patrick Divine](https://github.com/pddivine)
+[Patrick Divine](https://github.com/pddivine)  
+[Sahil Nayak](https://github.com/sahilnayak)
 
 #--Express--
 [![Express Logo](https://i.cloudup.com/zfY6lL7eFa-3000x3000.png)](http://expressjs.com/)
